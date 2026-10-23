@@ -1,0 +1,54 @@
+                                                                                 local Players=game:   
+                                                                        GetService("Players");local RunService=game:    
+                                                                    GetService("RunService");local Stats=game:GetService("Stats") 
+                                                                ;local Lighting=game:GetService("Lighting");local UIS=game:GetService(  
+                                                            "UserInputService");local Player=Players.LocalPlayer;local PlayerGui=Player:  
+                                                          WaitForChild("PlayerGui");local previous=PlayerGui:FindFirstChild("CrimsonFPSV2") 
+                                                        ;if previous then previous:Destroy();end local SETTINGS={BatchSize=25,UpdateInterval= 
+                                                      1,DisableParticles=true,DisableShadows=true,DisablePostEffects=true,ReduceWaterEffects=   
+                                                    true};local Active=true;local ScreenGui=Instance.new("ScreenGui");ScreenGui.Name=             
+                                                  "CrimsonFPSV2";ScreenGui.ResetOnSpawn=false;ScreenGui.IgnoreGuiInset=true;ScreenGui.Parent=       
+                                                  PlayerGui;local Frame=Instance.new("Frame");Frame.Name="PerformanceMonitor";Frame.Size=UDim2.       
+                                                fromOffset(142,104);Frame.Position=UDim2.new(1, -150,0.36,0);Frame.BackgroundColor3=Color3.fromRGB(90,8 
+                                                ,18);Frame.BackgroundTransparency=0.35;Frame.BorderSizePixel=0;Frame.Parent=ScreenGui;local Corner=       
+                                              Instance.new("UICorner");Corner.CornerRadius=UDim.new(0,8);Corner.Parent=Frame;local Stroke=Instance.new(     
+                                              "UIStroke");Stroke.Color=Color3.fromRGB(255,45,65);Stroke.Transparency=0.35;Stroke.Thickness=1;Stroke.Parent= 
+                                            Frame;local function CreateText(name,text,y,color) local Label=Instance.new("TextLabel");Label.Name=name;Label.   
+                                            Size=UDim2.new(1, -12,0,17);Label.Position=UDim2.fromOffset(7,y);Label.BackgroundTransparency=1;Label.Font=Enum.    
+                                          Font.GothamMedium;Label.TextSize=11;Label.TextColor3=color;Label.TextXAlignment=Enum.TextXAlignment.Left;Label.Text=    
+                                          text;Label.Parent=Frame;return Label;end local White=Color3.fromRGB(245,245,245);local Title=CreateText("Title",          
+                                          "CRIMSON  |  BOOST",5,Color3.fromRGB(255,100,110));Title.Font=Enum.Font.GothamBold;local FPSLabel=CreateText("FPS",         
+                                          "FPS: --",26,White);local PingLabel=CreateText("Ping","PING: --",43,White);local MemoryLabel=CreateText("Memory",           
+                                        "MEMORY: --",60,White);local StatusLabel=CreateText("Status","BOOST: STARTING",81,Color3.fromRGB(120,255,150));local Dragging=  
+                                        false;local DragStart;local StartPosition;local DragInput;Frame.      --[[==============================]]InputBegan:Connect(     
+                                        function(input) if ((input.UserInputType==Enum.             --[[============================================]]UserInputType.      
+                                        MouseButton1) or (input.UserInputType==Enum.            --[[======================================================]]UserInputType.  
+                                      Touch)) then Dragging=true;DragStart=input.Position;  --[[==========================================================]]StartPosition=    
+                                      Frame.Position;input.Changed:Connect(function() if  --[[==============================================================]](input.         
+                                      UserInputState==Enum.UserInputState.End) then       --[[================================================================]]Dragging=false; 
+                                      end end);end end);Frame.InputChanged:Connect(       --[[==================================================================]]function(     
+                                      input) if ((input.UserInputType==Enum.UserInputType --[[==================================================================]].MouseMovement)   
+                                     or (input.UserInputType==Enum.UserInputType.Touch))  --[[====================================================================]]then          
+                    DragInput=input;end end);UIS.InputChanged:Connect(function(input) if  --[[====================================================================]](Dragging and ( 
+              input==DragInput)) then local Delta=input.Position-DragStart ;Frame.        --[[======================================================================]]Position=     
+            UDim2.new(StartPosition.X.Scale,StartPosition.X.Offset + Delta.X ,            --[[======================================================================]]StartPosition 
+          .Y.Scale,StartPosition.Y.Offset + Delta.Y );end end);local Frames=0;local       --[[======================================================================]]TimePassed=0; 
+        local CurrentFPS=0;local FPSConnection;FPSConnection=RunService.RenderStepped:    --[[======================================================================]]Connect(      
+        function(dt) Frames+=1 TimePassed+=dt if (TimePassed>=SETTINGS.UpdateInterval)    --[[======================================================================]]then          
+      CurrentFPS=math.floor((Frames/TimePassed) + 0.5 );Frames=0;TimePassed=0;FPSLabel.   --[[======================================================================]]Text="FPS: "  
+         .. CurrentFPS ;if (CurrentFPS>=50) then FPSLabel.TextColor3=Color3.fromRGB(100,255 --[[==================================================================]],140);elseif (  
+      CurrentFPS>=30) then FPSLabel.TextColor3=Color3.fromRGB(255,210,90);else FPSLabel.    --[[================================================================]]TextColor3=Color3 
+    .fromRGB(255,100,100);end end end);task.spawn(function() while Active and ScreenGui.    --[[==============================================================]]Parent  do pcall( 
+    function() local Ping=Player:GetNetworkPing() * 1000 ;PingLabel.Text=string.format(       --[[==========================================================]]"PING: %.0f ms",    
+    Ping);local Memory=Stats:GetTotalMemoryUsageMb();MemoryLabel.Text=string.format(            --[[====================================================]]"MEMORY: %.0f MB",      
+    Memory);end);task.wait(1);end end);local function OptimiseObject(Object) pcall(function() if  --[[==============================================]]SETTINGS.DisableParticles 
+     then if (Object:IsA("ParticleEmitter") or Object:IsA("Trail") or Object:IsA("Beam")) then Object --[[====================================]].Enabled=false;end end if     
+    SETTINGS.DisableShadows then if Object:IsA("BasePart") then Object.CastShadow=false;end end if        --[[========================]]SETTINGS.DisablePostEffects then if ( 
+    Object:IsA("BloomEffect") or Object:IsA("BlurEffect") or Object:IsA("SunRaysEffect") or Object:IsA("DepthOfFieldEffect")) then Object.Enabled=false;end end end);end    
+  task.spawn(function() StatusLabel.Text="BOOST: OPTIMISING";local Objects=workspace:GetDescendants();for i,Object in ipairs(Objects) do if  not Active then break;end    
+  OptimiseObject(Object);if ((i%SETTINGS.BatchSize)==0) then RunService.Heartbeat:Wait();end end pcall(function() Lighting.GlobalShadows=false;end);if SETTINGS.        
+  ReduceWaterEffects then pcall(function() local Terrain=workspace.Terrain;Terrain.WaterWaveSize=0;Terrain.WaterWaveSpeed=0;Terrain.WaterReflectance=0;end);end for _,    
+  Object in ipairs(Lighting:GetChildren()) do OptimiseObject(Object);end StatusLabel.Text="BOOST: ACTIVE";end);local AddedConnection;AddedConnection=workspace.           
+  DescendantAdded:Connect(function(Object) if Active then task.defer(function() if (Active and Object.Parent) then OptimiseObject(Object);end end);end end);ScreenGui.    
+  Destroying:Connect(function() Active=false;if FPSConnection then FPSConnection:Disconnect();end if AddedConnection then AddedConnection:Disconnect();end end);print(    
+  "Crimson Hub FPS Booster V2 Loaded");
